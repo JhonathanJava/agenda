@@ -19,7 +19,7 @@ import br.com.estudoandroid.agenda.modelo.Aluno;
 public class AlunoDAO extends SQLiteOpenHelper {
 
     public AlunoDAO(Context context) {
-        super(context, "Agenda", null, 1);
+        super(context, "Agenda", null, 2);
     }
 
     @Override
@@ -30,31 +30,36 @@ public class AlunoDAO extends SQLiteOpenHelper {
                 " endereco TEXT, " +
                 " telefone TEXT, " +
                 " site TEXT, " +
-                " nota REAL); ";
+                " nota REAL, " +
+                " caminhoFoto TEXT); ";
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS Alunos";
-        db.execSQL(sql);
-        onCreate(db);
+        String sql = "";
+        switch (oldVersion) {
+            case 1:
+                sql = "ALTER TABLE Alunos ADD COLUMN caminhoFoto TEXT";
+                db.execSQL(sql);
+        }
     }
 
     public void insere(Aluno aluno) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues dados = pegaDadosDoAluno(aluno);
-        db.insert("Alunos",null,dados);
+        db.insert("Alunos", null, dados);
     }
 
     @NonNull
     private ContentValues pegaDadosDoAluno(Aluno aluno) {
         ContentValues dados = new ContentValues();
-        dados.put("nome",aluno.getNome());
-        dados.put("endereco",aluno.getEndereco());
-        dados.put("telefone",aluno.getTelefone());
-        dados.put("site",aluno.getSite());
-        dados.put("nota",aluno.getNota());
+        dados.put("nome", aluno.getNome());
+        dados.put("endereco", aluno.getEndereco());
+        dados.put("telefone", aluno.getTelefone());
+        dados.put("site", aluno.getSite());
+        dados.put("nota", aluno.getNota());
+        dados.put("caminhoFoto",aluno.getCaminhoFoto());
         return dados;
     }
 
@@ -65,7 +70,7 @@ public class AlunoDAO extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sql, null);
 
         List<Aluno> alunos = new ArrayList<Aluno>();
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             Aluno aluno = new Aluno();
             aluno.setId(c.getLong(c.getColumnIndex(("id"))));
             aluno.setNome(c.getString(c.getColumnIndex(("nome"))));
@@ -73,6 +78,7 @@ public class AlunoDAO extends SQLiteOpenHelper {
             aluno.setTelefone(c.getString(c.getColumnIndex(("telefone"))));
             aluno.setSite(c.getString(c.getColumnIndex(("site"))));
             aluno.setNota(c.getDouble(c.getColumnIndex("nota")));
+            aluno.setCaminhoFoto(c.getString(c.getColumnIndex("caminhoFoto")));
             alunos.add(aluno);
         }
 
@@ -84,7 +90,7 @@ public class AlunoDAO extends SQLiteOpenHelper {
     public void deleta(Aluno aluno) {
         SQLiteDatabase db = getWritableDatabase();
         String[] params = {aluno.getId().toString()};
-        db.delete("Alunos"," id = ? ", params);
+        db.delete("Alunos", " id = ? ", params);
     }
 
     public void altera(Aluno aluno) {
@@ -92,6 +98,6 @@ public class AlunoDAO extends SQLiteOpenHelper {
 
         ContentValues dados = pegaDadosDoAluno(aluno);
         String[] params = {aluno.getId().toString()};
-        db.update("Alunos",dados," id = ? ",params);
+        db.update("Alunos", dados, " id = ? ", params);
     }
 }
