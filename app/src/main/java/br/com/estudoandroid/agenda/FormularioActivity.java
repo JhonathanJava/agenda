@@ -1,6 +1,8 @@
 package br.com.estudoandroid.agenda;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.Serializable;
 
 import br.com.estudoandroid.agenda.dao.AlunoDAO;
@@ -27,12 +30,22 @@ public class FormularioActivity extends AppCompatActivity {
 
         helper = new FormularioHelper(this);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         Aluno aluno = (Aluno) intent.getSerializableExtra("aluno");
         if(aluno != null){
             helper.preencheFormulario(aluno);
         }
-
+        Button botaoFoto = (Button) findViewById(R.id.formulario_botao_foto);
+        botaoFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String caminhoFoto = getExternalFilesDir(null) + "/"+System.currentTimeMillis()+".jpg";
+                File arquivoFoto = new File(caminhoFoto);
+                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(arquivoFoto));
+                startActivity(intentCamera);
+            }
+        });
     }
 
     @Override
