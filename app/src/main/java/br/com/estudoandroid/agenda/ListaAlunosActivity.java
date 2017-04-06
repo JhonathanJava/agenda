@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import java.util.List;
 
+import br.com.estudoandroid.agenda.adapter.AlunosAdapter;
 import br.com.estudoandroid.agenda.dao.AlunoDAO;
 import br.com.estudoandroid.agenda.modelo.Aluno;
 
@@ -67,7 +68,7 @@ public class ListaAlunosActivity extends AppCompatActivity {
         List<Aluno> alunos = dao.buscaAluno();
         dao.close();
 
-        ArrayAdapter<Aluno> adapter = new ArrayAdapter<Aluno>(this,android.R.layout.simple_list_item_1,alunos);
+        AlunosAdapter adapter = new AlunosAdapter(this, alunos);
         listaAlunos.setAdapter(adapter);
     }
 
