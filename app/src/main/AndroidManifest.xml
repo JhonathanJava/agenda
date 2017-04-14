@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="br.com.estudoandroid.agenda">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="br.com.estudoandroid.agenda">
 
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -20,8 +23,16 @@
         </activity>
         <activity
             android:name=".FormularioActivity"
-            android:label="Formulário">
-        </activity>
+            android:label="Formulário" />
+
+        <receiver android:name=".receiver.SMSReceiver">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".ProvasActivity" />
+        <activity android:name=".DetalhesProvaActivity"></activity>
     </application>
 
 </manifest>
