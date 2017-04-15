@@ -1,6 +1,9 @@
 package br.com.estudoandroid.agenda;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,29 +24,40 @@ public class ProvasActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_provas);
 
-        List<String> topicosPort = Arrays.asList("Sujeito","Objeto Direto", "Objeto Indireto");
-        Prova provaPortugues = new Prova("Português", "25/05/2016", topicosPort);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction tx = fragmentManager.beginTransaction();
+        tx.replace(R.id.frame_principal, new ListaProvasFragment());
 
-        List<String> topicosMat = Arrays.asList("Equacoes de segundo grau","Trigonometria");
-        Prova provaMatematica = new Prova("Matemática", "27/05/2016", topicosMat);
+        if(estaNoModoPaisagem()){
+            tx.replace(R.id.frame_secundario, new DetalhesProvaFragment());
+        }
 
-        List<Prova> provas = Arrays.asList(provaPortugues, provaMatematica);
 
-        ArrayAdapter<Prova> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,provas);
+        tx.commit();
 
-        ListView lista = (ListView) findViewById(R.id.provas_lista);
-        lista.setAdapter(adapter);
+    }
 
-        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Prova prova = (Prova) parent.getItemAtPosition(position);
-                Toast.makeText(ProvasActivity.this, "Clicou na prova de "+prova,Toast.LENGTH_SHORT).show();
-                Intent vaiPraDetalhes = new Intent(ProvasActivity.this, DetalhesProvaActivity.class);
-                vaiPraDetalhes.putExtra("prova", prova);
-                startActivity(vaiPraDetalhes);
-            }
-        });
+    private boolean estaNoModoPaisagem() {
+        return getResources().getBoolean(R.bool.modoPaisagem);
+    }
 
+    public void selecionaProva(Prova prova) {
+        FragmentManager manager = getSupportFragmentManager();
+        if(!estaNoModoPaisagem()) {
+            FragmentTransaction tx = manager.beginTransaction();
+
+            DetalhesProvaFragment detalhesFragment = new DetalhesProvaFragment();
+            Bundle parametros = new Bundle();
+            parametros.putSerializable("prova",prova);
+            detalhesFragment.setArguments(parametros);
+            tx.replace(R.id.frame_principal, detalhesFragment);
+            tx.addToBackStack(null);
+            tx.commit();
+        }else{
+            DetalhesProvaFragment detalhesFragment = (DetalhesProvaFragment)
+                    manager.findFragmentById(R.id.frame_secundario);
+            detalhesFragment.populaCamposCom(prova);
+
+        }
     }
 }
